@@ -1,0 +1,19 @@
+# Fibonacci Sequence in HUMA X
+
+create function fib using n
+    if n is less than or equal to 1 then
+        give back n
+    otherwise
+        give back (call fib using (n - 1)) + (call fib using (n - 2))
+    end
+end
+
+show "--- Fibonacci Sequence ---"
+make count = 10
+make i = 0
+
+repeat while i is less than count
+    make f = call fib using i
+    show "fib(", i, ") = ", f
+    change i to i + 1
+end

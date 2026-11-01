@@ -1,0 +1,4 @@
+# Hello World in HUMA X
+make name = "Manojit"
+show "Hello, HUMA X!"
+show "Welcome, ", name

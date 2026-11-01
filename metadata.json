@@ -1,0 +1,6 @@
+{
+  "name": "HUMA X — Human-Oriented Universal Machine Language",
+  "description": "Production-ready compiler, virtual machine, bytecode engine, standard library, and interactive IDE for HUMA X.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

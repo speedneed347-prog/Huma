@@ -1,0 +1,15 @@
+# Lists, Dictionaries, and Builtin Collection Methods in HUMA X
+
+# Lists
+make numbers = [10, 20, 30, 40, 50]
+show "Initial list:", numbers
+show "Item at index 2:", numbers[2]
+
+# Dictionaries
+make user = {"name": "Manojit", "role": "Compiler Architect", "level": 100}
+show "User profile:", user
+show "User role:", user["role"]
+
+# Length function
+show "Numbers count:", length(numbers)
+show "User keys count:", length(user)

@@ -1,0 +1,19 @@
+# Loop Constructs in HUMA X
+
+show "--- 1. Repeat N times ---"
+repeat 4 times
+    show "HUMA X is human-oriented!"
+end
+
+show "--- 2. Repeat while condition ---"
+make counter = 1
+repeat while counter is less than or equal to 3
+    show "Count:", counter
+    change counter to counter + 1
+end
+
+show "--- 3. Repeat for each item ---"
+make languages = ["HUMA X", "C++", "TypeScript", "Python"]
+repeat for each lang in languages
+    show "Language:", lang
+end

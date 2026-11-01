@@ -1,0 +1,69 @@
+name: HUMA X CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      - name: Setup macOS Dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake
+
+      - name: Configure CMake
+        run: cmake -B build -S huma_lang -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build HUMA X Compiler & Tools
+        run: cmake --build build --config Release -j4
+
+      - name: Run Automated Test Suite
+        run: |
+          cd build
+          ctest --output-on-failure -C Release
+
+      - name: Execute Hello World Smoke Test
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            ./build/Release/huma.exe run huma_lang/examples/hello.huma
+          else
+            ./build/huma run huma_lang/examples/hello.huma
+          fi
+
+      - name: Run Native Compilation Smoke Test
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          ./build/huma build huma_lang/examples/hello.huma -o build/hello_native
+          ./build/hello_native
+
+      - name: Upload HUMA X Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: huma-bin-${{ matrix.os }}
+          path: |
+            build/huma
+            build/huma.exe
+            build/Release/huma.exe
+            build/libhuma_core.a
+            build/Release/huma_core.lib

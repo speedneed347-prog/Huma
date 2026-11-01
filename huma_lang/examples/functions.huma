@@ -1,0 +1,16 @@
+# Functions, Parameters, and Return Values in HUMA X
+
+create function multiply using a, b
+    give back a * b
+end
+
+create function calculate_total using subtotal, tax_rate
+    make tax = subtotal * tax_rate
+    give back subtotal + tax
+end
+
+make product = call multiply using 6, 7
+show "6 * 7 =", product
+
+make total = call calculate_total using 100, 0.08
+show "Total with 8% tax:", total

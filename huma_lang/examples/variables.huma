@@ -1,0 +1,12 @@
+# Variables, Constants, and Arithmetic in HUMA X
+
+fixed PI = 3.14159265
+make radius = 5
+make area = PI * (radius ^ 2)
+
+show "Radius:", radius
+show "Calculated Area:", area
+
+make score = 100
+change score to score + 25
+show "Updated Score:", score

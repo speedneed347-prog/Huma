@@ -1,0 +1,18 @@
+# Standard Library Modules Demonstration in HUMA X
+
+show "--- Math Module ---"
+show "Square root of 144:", sqrt(144)
+show "2 to power 8:", pow(2, 8)
+show "Floor 7.8:", floor(7.8)
+show "Ceil 7.2:", ceil(7.2)
+show "Max of 45 and 99:", max(45, 99)
+
+show "--- Text Module ---"
+make msg = "huma x machine language"
+show "Uppercase:", to_upper(msg)
+make words = split(msg, " ")
+show "Words count:", length(words)
+
+show "--- System & Time ---"
+show "Running on platform:", platform()
+show "Current millisecond timestamp:", now()
