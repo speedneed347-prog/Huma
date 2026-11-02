@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HUMA X Mobile Studio (Offline Runner)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, #0284c7, #4f46e5);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .logo-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .status-tag {
+      font-size: 10px;
+      background: #052e16;
+      color: #4ade80;
+      border: 1px solid #166534;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .controls {
+      display: flex;
+      gap: 6px;
+    }
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-run {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+    }
+    .btn-clear {
+      background: #21262d;
+      color: #8b949e;
+      border: 1px solid #30363d;
+    }
+    .preset-bar {
+      background: #11161d;
+      border-bottom: 1px solid #21262d;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .preset-bar label {
+      font-size: 11px;
+      color: #8b949e;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .preset-bar select {
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      outline: none;
+    }
+    .keyboard-shortcuts {
+      background: #090d13;
+      border-bottom: 1px solid #21262d;
+      padding: 4px 8px;
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+    }
+    .key-btn {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #58a6ff;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-family: monospace;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .editor-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+    }
+    textarea {
+      width: 100%;
+      height: 100%;
+      background: #0d1117;
+      color: #f0f6fc;
+      border: none;
+      padding: 12px;
+      font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+    .output-container {
+      height: 38%;
+      background: #090d13;
+      border-top: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+    }
+    .output-header {
+      background: #161b22;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .output-console {
+      flex: 1;
+      padding: 10px 12px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .stdout { color: #34d399; }
+    .stderr { color: #f87171; }
+    .info { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-box">
+      <div class="logo-badge">HX</div>
+      <div>
+        <div class="logo-title">HUMA X Mobile</div>
+      </div>
+      <span class="status-tag">100% Offline</span>
+    </div>
+    <div class="controls">
+      <button class="btn btn-clear" onclick="clearOutput()">মুছুন</button>
+      <button class="btn btn-run" onclick="runHumaCode()">▶ চালান</button>
+    </div>
+  </header>
+
+  <div class="preset-bar">
+    <label>উদাহরণ:</label>
+    <select id="exampleSelect" onchange="loadSelectedExample()">
+      <option value="hello">01. Hello World (নমস্কার)</option>
+      <option value="variables">02. Variables & Math (চলক ও গণিত)</option>
+      <option value="conditions">03. Conditions (শর্তাবলী if/otherwise)</option>
+      <option value="loops">04. Loops (লুপ repeat)</option>
+      <option value="functions">05. Functions (ফাংশন)</option>
+      <option value="fibonacci">06. Fibonacci (রিকার্সন)</option>
+      <option value="collections">07. Lists & Dictionaries</option>
+    </select>
+  </div>
+
+  <div class="keyboard-shortcuts">
+    <button class="key-btn" onclick="insertSnippet('make ')">make</button>
+    <button class="key-btn" onclick="insertSnippet('fixed ')">fixed</button>
+    <button class="key-btn" onclick="insertSnippet('show ')">show</button>
+    <button class="key-btn" onclick="insertSnippet('change ')">change</button>
+    <button class="key-btn" onclick="insertSnippet('if ')">if</button>
+    <button class="key-btn" onclick="insertSnippet('otherwise\n')">otherwise</button>
+    <button class="key-btn" onclick="insertSnippet('repeat 3 times\n')">repeat</button>
+    <button class="key-btn" onclick="insertSnippet('end\n')">end</button>
+    <button class="key-btn" onclick="insertSnippet('give back ')">give back</button>
+  </div>
+
+  <div class="main-content">
+    <div class="editor-container">
+      <textarea id="codeEditor" spellcheck="false"></textarea>
+    </div>
+
+    <div class="output-container">
+      <div class="output-header">
+        <span>ফলাফল / Console Output</span>
+        <span id="execStats">প্রস্তুত</span>
+      </div>
+      <div id="consoleOutput" class="output-console stdout">HUMA X মোবাইলে ব্যবহারের জন্য প্রস্তুত। 'চালান' বাটনে চাপ দিন।</div>
+    </div>
+  </div>
+
+  <script>
+    const EXAMPLES = {
+      hello: `# HUMA X Hello World
+make name = "Manojit"
+show "Hello, HUMA X!"
+show "Welcome to mobile programming, ", name
+`,
+      variables: `# Variables & Math
+fixed PI = 3.14159
+make radius = 7
+make area = PI * (radius ^ 2)
+
+show "Radius:", radius
+show "Circle Area:", area
+
+make score = 90
+change score to score + 10
+show "Updated Score:", score
+`,
+      conditions: `# Conditions in HUMA X
+make age = 19
+
+if age is greater than 18 then
+    show "Status: Adult (প্রাপ্তবয়স্ক)"
+otherwise
+    show "Status: Underage"
+end
+`,
+      loops: `# Loops in HUMA X
+show "--- Repeat 4 times ---"
+repeat 4 times
+    show "HUMA X runs natively on mobile!"
+end
+
+show "--- Repeat while counter ---"
+make c = 1
+repeat while c is less than or equal to 3
+    show "Count:", c
+    change c to c + 1
+end
+`,
+      functions: `# Functions in HUMA X
+create function multiply using a, b
+    give back a * b
+end
+
+create function calculate using price, tax
+    give back price + (price * tax)
+end
+
+make res = call multiply using 6, 7
+show "6 * 7 =", res
+
+make total = call calculate using 100, 0.05
+show "Total with 5% tax:", total
+`,
+      fibonacci: `# Fibonacci Recursion
+create function fib using n
+    if n is less than or equal to 1 then
+        give back n
+    otherwise
+        give back (call fib using (n - 1)) + (call fib using (n - 2))
+    end
+end
+
+repeat for each i in [0, 1, 2, 3, 4, 5, 6, 7]
+    show "fib(", i, ") = ", call fib using i
+end
+`,
+      collections: `# Lists & Dictionaries
+make fruits = ["Mango (আম)", "Banana (কলা)", "Apple (আপেল)"]
+show "Fruits list:", fruits
+show "First fruit:", fruits[0]
+
+make user = {"name": "Manojit", "device": "Android Phone"}
+show "User profile:", user
+show "Device:", user["device"]
+`
+    };
+
+    const editor = document.getElementById('codeEditor');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const execStats = document.getElementById('execStats');
+
+    function loadSelectedExample() {
+      const sel = document.getElementById('exampleSelect').value;
+      if (EXAMPLES[sel]) {
+        editor.value = EXAMPLES[sel];
+      }
+    }
+
+    function insertSnippet(snip) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = editor.value.substring(0, start) + snip + editor.value.substring(end);
+      editor.focus();
+      editor.selectionStart = editor.selectionEnd = start + snip.length;
+    }
+
+    function clearOutput() {
+      consoleOutput.textContent = '';
+      execStats.textContent = 'ক্লিয়ার করা হয়েছে';
+    }
+
+    // ==================== Client-side Offline HUMA Engine ====================
+    function runHumaCode() {
+      const code = editor.value;
+      consoleOutput.textContent = '';
+      execStats.textContent = 'রান হচ্ছে...';
+
+      const t0 = performance.now();
+      try {
+        const out = executeHumaJS(code);
+        const t1 = performance.now();
+        consoleOutput.className = 'output-console stdout';
+        consoleOutput.textContent = out.join('\n') || 'সফলভাবে সম্পন্ন হয়েছে (কোনো আউটপুট নেই)';
+        execStats.textContent = (t1 - t0).toFixed(1) + ' ms';
+      } catch (err) {
+        consoleOutput.className = 'output-console stderr';
+        consoleOutput.textContent = 'Error: ' + err.message;
+        execStats.textContent = 'ব্যর্থ';
+      }
+    }
+
+    // Lightweight In-Browser JavaScript Interpreter for offline mobile runner
+    function executeHumaJS(source) {
+      const stdout = [];
+      const globals = {
+        PI: 3.141592653589793,
+        E: 2.718281828459045,
+        sqrt: Math.sqrt,
+        pow: Math.pow,
+        abs: Math.abs,
+        sin: Math.sin,
+        cos: Math.cos,
+        floor: Math.floor,
+        ceil: Math.ceil,
+        round: Math.round,
+        min: Math.min,
+        max: Math.max,
+        random: Math.random,
+        length: (x) => (x ? (x.length !== undefined ? x.length : Object.keys(x).length) : 0),
+        to_upper: (s) => String(s).toUpperCase(),
+        to_lower: (s) => String(s).toLowerCase(),
+        platform: () => "mobile-browser"
+      };
+
+      // Transform HUMA syntax to executable JS in browser
+      let js = source;
+
+      // Comments
+      js = js.replace(/#.*$/gm, '');
+
+      // show expr1, expr2... -> runtime_show(expr1, expr2...)
+      js = js.replace(/^\s*show\s+(.+)$/gm, (match, exprs) => {
+        return `__runtime_show(${exprs});`;
+      });
+
+      // fixed name = val -> const name = val;
+      js = js.replace(/^\s*fixed\s+([a-zA-Z_]\w*)\s*=\s*(.+)$/gm, 'const $1 = $2;');
+
+      // make name = val -> let name = val;
+      js = js.replace(/^\s*make\s+([a-zA-Z_]\w*)\s*=\s*(.+)$/gm, 'let $1 = $2;');
+
+      // change name to val -> name = val;
+      js = js.replace(/^\s*change\s+([a-zA-Z_]\w*)\s+to\s+(.+)$/gm, '$1 = $2;');
+
+      // create function name using a, b -> function name(a, b) {
+      js = js.replace(/^\s*create\s+function\s+([a-zA-Z_]\w*)\s+using\s+(.+)$/gm, 'function $1($2) {');
+      js = js.replace(/^\s*create\s+function\s+([a-zA-Z_]\w*)\s*$/gm, 'function $1() {');
+
+      // call name using a, b -> name(a, b)
+      js = js.replace(/\bcall\s+([a-zA-Z_]\w*)\s+using\s+([^;\n\)]+)/g, '$1($2)');
+
+      // give back val -> return val;
+      js = js.replace(/^\s*give\s+back\s*(.*)$/gm, 'return $1;');
+
+      // English comparisons
+      js = js.replace(/\bis\s+greater\s+than\s+or\s+equal\s+to\b/g, '>=');
+      js = js.replace(/\bis\s+less\s+than\s+or\s+equal\s+to\b/g, '<=');
+      js = js.replace(/\bis\s+greater\s+than\b/g, '>');
+      js = js.replace(/\bis\s+less\s+than\b/g, '<');
+      js = js.replace(/\bis\s+equal\s+to\b/g, '===');
+      js = js.replace(/\bis\s+not\s+equal\s+to\b/g, '!==');
+      js = js.replace(/\bis\b/g, '===');
+      js = js.replace(/\band\b/g, '&&');
+      js = js.replace(/\bor\b/g, '||');
+      js = js.replace(/\byes\b/g, 'true');
+      js = js.replace(/\bno\b/g, 'false');
+      js = js.replace(/\bnothing\b/g, 'null');
+      js = js.replace(/\^/g, '**');
+
+      // if cond then -> if (cond) {
+      js = js.replace(/^\s*if\s+(.+?)\s+then\s*$/gm, 'if ($1) {');
+      js = js.replace(/^\s*else\s+if\s+(.+?)\s+then\s*$/gm, '} else if ($1) {');
+      js = js.replace(/^\s*otherwise\s*$/gm, '} else {');
+
+      // repeat N times -> for (let __i = 0; __i < N; ++__i) {
+      js = js.replace(/^\s*repeat\s+(.+?)\s+times\s*$/gm, 'for (let __i = 0; __i < ($1); ++__i) {');
+
+      // repeat while cond -> while (cond) {
+      js = js.replace(/^\s*repeat\s+while\s+(.+?)$/gm, 'while ($1) {');
+
+      // repeat for each item in list -> for (const item of list) {
+      js = js.replace(/^\s*repeat\s+for\s+each\s+([a-zA-Z_]\w*)\s+in\s+(.+)$/gm, 'for (const $1 of ($2)) {');
+
+      // end -> }
+      js = js.replace(/^\s*end\s*$/gm, '}');
+
+      function __runtime_show(...args) {
+        const line = args.map(a => (a === null ? 'nothing' : a === true ? 'yes' : a === false ? 'no' : typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+        stdout.push(line);
+      }
+
+      // Execute safely with sandboxed scope
+      const fn = new Function('__runtime_show', 'globals', `
+        with(globals) {
+          ${js}
+        }
+      `);
+      fn(__runtime_show, globals);
+
+      return stdout;
+    }
+
+    // Initial load
+    editor.value = EXAMPLES.hello;
+  </script>
+</body>
+</html>

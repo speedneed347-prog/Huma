@@ -83,6 +83,8 @@ export default function App() {
   const [examples, setExamples] = useState<Example[]>([]);
   const [selectedExampleId, setSelectedExampleId] = useState<string>('default');
   const [copied, setCopied] = useState<boolean>(false);
+  const [showMobileModal, setShowMobileModal] = useState<boolean>(false);
+  const [mobileTab, setMobileTab] = useState<'termux' | 'runner' | 'github'>('runner');
 
   // REPL state
   const [replInput, setReplInput] = useState<string>('');
@@ -384,8 +386,16 @@ export default function App() {
           </button>
         </div>
 
-        {/* Right Tools / Zip Download */}
+        {/* Right Tools / Zip Download & Mobile */}
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowMobileModal(true)}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-950 transition cursor-pointer"
+          >
+            <span>📱</span>
+            <span>মোবাইলে চালান / Mobile</span>
+          </button>
+
           <a
             href="/api/download-zip"
             download="huma-x-complete-v1.0.0.zip"
@@ -393,7 +403,7 @@ export default function App() {
             title="Download complete offline C++ compiler repository & test suite as .zip"
           >
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Download Ecosystem (.zip)</span>
+            <span className="hidden sm:inline">Download (.zip)</span>
           </a>
         </div>
       </header>
@@ -846,6 +856,209 @@ make res = call add using 10, 20`}
           </div>
         </div>
       </div>
+
+      {/* Mobile & Downloads Modal */}
+      {showMobileModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#161b22] border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-[#11161d]">
+              <div className="flex items-center space-x-2">
+                <span className="text-xl">📱</span>
+                <div>
+                  <h3 className="text-base font-bold text-white">মোবাইলে HUMA X চালানো ও ডাউনলোড</h3>
+                  <p className="text-xs text-slate-400">Run & Download HUMA X on Mobile (Android & iOS)</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowMobileModal(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-md text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Tabs */}
+            <div className="flex border-b border-slate-800 bg-[#0e131a] px-4">
+              <button
+                onClick={() => setMobileTab('runner')}
+                className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition cursor-pointer ${
+                  mobileTab === 'runner'
+                    ? 'border-emerald-500 text-emerald-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                ১. অফলাইন মোবাইল রানার (সবচেয়ে সহজ)
+              </button>
+              <button
+                onClick={() => setMobileTab('termux')}
+                className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition cursor-pointer ${
+                  mobileTab === 'termux'
+                    ? 'border-cyan-500 text-cyan-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                ২. Android Termux (আসল কম্পাইলার)
+              </button>
+              <button
+                onClick={() => setMobileTab('github')}
+                className={`py-2.5 px-3 text-xs font-semibold border-b-2 transition cursor-pointer ${
+                  mobileTab === 'github'
+                    ? 'border-purple-500 text-purple-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                ৩. GitHub Actions প্যাকেজ
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {mobileTab === 'runner' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-emerald-950/30 border border-emerald-800/50 rounded-lg text-emerald-200 space-y-1">
+                    <div className="font-bold text-sm text-emerald-400">
+                      ✓ কোনো ইন্সটলেশন বা ইন্টারনেটের প্রয়োজন নেই!
+                    </div>
+                    <p className="text-[11px] text-emerald-300/90 leading-relaxed">
+                      এটি একটি একক সিঙ্গেল-ফাইল HTML অ্যাপ। এটি একবার ডাউনলোড করে আপনার মোবাইলের Chrome, Samsung Internet বা Safari ব্রাউজারে খুললে ১০০% অফলাইনে কাজ করবে।
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-white text-xs">কীভাবে মোবাইলে চালু করবেন:</h4>
+                    <ol className="list-decimal list-inside space-y-1.5 text-slate-300">
+                      <li>নিচের সবুজ বাটনে ক্লিক করে <strong>huma-mobile-runner.html</strong> ডাউনলোড করুন।</li>
+                      <li>আপনার মোবাইলের <strong>Files / Downloads</strong> ফোল্ডারে যান।</li>
+                      <li>ফাইলটিতে ট্যাপ করে <strong>Chrome / ব্রাউজার</strong> দিয়ে ওপেন করুন।</li>
+                      <li>মোবাইল স্ক্রিনের ভার্চুয়াল শর্টকাট দিয়ে কোড লিখুন এবং <strong>▶ চালান</strong> চাপুন!</li>
+                    </ol>
+                  </div>
+
+                  <div className="pt-2 flex flex-wrap gap-2">
+                    <a
+                      href="/api/download/runner"
+                      download="huma-mobile-runner.html"
+                      className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-bold text-white text-xs shadow-lg shadow-emerald-950 transition cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>ডাউনলোড করুন huma-mobile-runner.html</span>
+                    </a>
+
+                    <a
+                      href="/huma-mobile.html"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center space-x-1.5 px-3.5 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition cursor-pointer"
+                    >
+                      <span>ব্রাউজারে সরাসরি টেস্ট করুন ↗</span>
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {mobileTab === 'termux' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-cyan-950/30 border border-cyan-800/50 rounded-lg text-cyan-200 space-y-1">
+                    <div className="font-bold text-sm text-cyan-400">
+                      Android Termux দিয়ে ফোনে আসল C++20 কম্পাইলার চালান
+                    </div>
+                    <p className="text-[11px] text-cyan-300/90 leading-relaxed">
+                      Android ফোনে লিনাক্স টার্মিনাল অ্যাপ Termux-এ HUMA X সম্পূর্ণ নেটিভভাবে চলে।
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-white">Termux এ ১-লাইনের অটো-ইনস্টল কমান্ড:</h4>
+                    <p className="text-slate-400 text-[11px]">Termux ওপেন করে এই কমান্ডটি পেস্ট করুন:</p>
+                    <pre className="bg-[#0a0d13] p-3 rounded-lg border border-slate-800 text-cyan-300 font-mono text-[11px] whitespace-pre-wrap select-all">
+{`pkg update && pkg install -y clang cmake make git
+git clone https://github.com/huma-lang/huma-x.git
+cd huma-x/huma_lang
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4
+cp build/huma $PREFIX/bin/
+huma version`}
+                    </pre>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-white">ইনস্টল হওয়ার পর ফোনে চালানোর কমান্ড:</h4>
+                    <pre className="bg-[#0a0d13] p-2.5 rounded-lg border border-slate-800 text-emerald-400 font-mono text-[11px]">
+{`huma run hello.huma
+huma repl`}
+                    </pre>
+                  </div>
+
+                  <div className="pt-2">
+                    <a
+                      href="/api/download/mobile"
+                      download="huma-x-android-mobile.zip"
+                      className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-bold text-white text-xs shadow-lg shadow-cyan-950 transition cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>ডাউনলোড করুন Android Mobile Package (.zip)</span>
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {mobileTab === 'github' && (
+                <div className="space-y-4">
+                  <div className="p-3 bg-purple-950/30 border border-purple-800/50 rounded-lg text-purple-200 space-y-1">
+                    <div className="font-bold text-sm text-purple-400">
+                      GitHub Actions Multi-Platform CI/CD
+                    </div>
+                    <p className="text-[11px] text-purple-300/90 leading-relaxed">
+                      গিটহাবে পুশ করলে স্বয়ংক্রিয়ভাবে Android ARM64, Linux, Windows এবং macOS বাইনারি বিল্ড হয়ে রিলিজ ফাইলে যুক্ত হবে।
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-white">GitHub Actions বিল্ড আর্কিটেকচার:</h4>
+                    <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                      <li><strong>Android ARM64:</strong> NDK r26b cross-compiled binary</li>
+                      <li><strong>Linux x86-64:</strong> GCC 12 native ELF binary</li>
+                      <li><strong>Windows x64:</strong> MSVC / GCC huma.exe</li>
+                      <li><strong>macOS:</strong> Universal binary (arm64 & x86_64)</li>
+                      <li><strong>Web / Mobile:</strong> huma-mobile-offline-runner.html</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
+                    <div className="text-[11px] text-slate-400 mb-1">ওয়ার্কফ্লো ফাইলের অবস্থান:</div>
+                    <code className="text-cyan-400 font-mono text-[11px]">
+                      .github/workflows/build-and-release.yml
+                    </code>
+                  </div>
+
+                  <div className="pt-2">
+                    <a
+                      href="/api/download-zip"
+                      download="huma-x-complete-v1.0.0.zip"
+                      className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-xs shadow-lg shadow-indigo-950 transition cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>সম্পূর্ণ সোর্স কোড ডাউনলোড (.zip)</span>
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 border-t border-slate-800 bg-[#11161d] flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">HUMA X Ecosystem v1.0.0</span>
+              <button
+                onClick={() => setShowMobileModal(false)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-md text-xs font-semibold transition cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

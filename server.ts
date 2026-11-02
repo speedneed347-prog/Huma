@@ -273,6 +273,26 @@ app.get('/api/download-zip', (_req: Request, res: Response) => {
   }
 });
 
+// GET /api/download/mobile
+app.get('/api/download/mobile', (_req: Request, res: Response) => {
+  const zipPath = path.join(__dirname, 'public/huma-android-mobile.zip');
+  if (fs.existsSync(zipPath)) {
+    res.download(zipPath, 'huma-x-android-mobile.zip');
+  } else {
+    res.status(404).json({ error: 'Mobile zip archive not found' });
+  }
+});
+
+// GET /api/download/runner
+app.get('/api/download/runner', (_req: Request, res: Response) => {
+  const htmlPath = path.join(__dirname, 'public/huma-mobile-runner.html');
+  if (fs.existsSync(htmlPath)) {
+    res.download(htmlPath, 'huma-mobile-runner.html');
+  } else {
+    res.status(404).json({ error: 'Mobile runner not found' });
+  }
+});
+
 // Setup Vite middleware or static serving
 async function setupServer() {
   if (process.env.NODE_ENV !== 'production') {
